@@ -1,13 +1,31 @@
-from Helpers.constantes import USUARIO, PASSWORD, INITIAL_URL
+import pytest
 from selenium.webdriver.common.by import By
 from selenium import webdriver
+import time
 
 
-def login():
+@pytest.fixture()
+def setup_data():
+    data = {'username': 'standard_user', 'password': 'secret_sauce', 'url': 'https://www.saucedemo.com/'}
+    return data
+
+
+@pytest.fixture()
+def driver_ini():
     driver = webdriver.Chrome()
-    driver.get(INITIAL_URL)
-    username = driver.find_element(by=By.ID, value=USUARIO)
-    username.send_keys(USUARIO)
-    password = driver.find_element(by=By.ID, value=PASSWORD)
-    password.send_keys(PASSWORD)
+    return driver
+
+
+@pytest.fixture()
+def login(setup_data, driver_ini):
+    time.sleep(3)
+    driver = driver_ini
+    driver.get((setup_data['url']))
+    username = driver.find_element(by=By.ID, value="user-name")
+    username.send_keys(setup_data['username'])
+    password = driver.find_element(by=By.ID, value="password")
+    password.send_keys(setup_data['password'])
     driver.find_element(by=By.ID, value="login-button").click()
+
+
+
